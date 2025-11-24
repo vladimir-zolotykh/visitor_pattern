@@ -26,7 +26,7 @@ class Mul(BinOp):
 
 class Visitor:
     def visit(self, node: Node):
-        name = f"visit_{type(node).__name}"
+        name = f"visit_{type(node).__name__}"
         method = getattr(self, name, self.visit_generic)
         return method(node)
 
@@ -48,7 +48,7 @@ class Evaluator(Visitor):
         return node.val
 
 
-class Printer:
+class Printer(Visitor):
     def visit_Add(self, node: Node) -> str:
         return "{:s} + {:s}".format(self.visit(node.left), self.visit(node.right))
 
