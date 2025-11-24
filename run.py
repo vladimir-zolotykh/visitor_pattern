@@ -5,9 +5,9 @@ class Node:
     pass
 
 
-class Number(Node):
+class Num(Node):
     def __init__(self, val):
-        self.number = val
+        self.val = val
 
 
 class BinOp(Node):
@@ -25,16 +25,41 @@ class Mul(BinOp):
 
 
 class Visitor:
-    def visit(node: Node):
-        pass
+    def visit(self, node: Node):
+        name = f"visit_{type(node).__name}"
+        method = getattr(self, name, self.visit_generic)
+        return method(node)
+
+    def visit_generic(self, node: Node):
+        raise TypeError(f"Don't know how to visit {node}")
 
 
-class Evaluator:
-    pass
+class Evaluator(Visitor):
+    def visit_Add(self, node: Node) -> float:
+        return self.visit(node.left) + self.visit(node.right)
+
+    def visit_Sub(self, node: Node) -> float:
+        return self.visit(node.left) - self.visit(node.right)
+
+    def visit_Mul(self, node: Node) -> float:
+        return self.visit(node.left) * self.visit(node.right)
+
+    def visit_Num(self, node: Node) -> float:
+        return node.val
 
 
 class Printer:
-    pass
+    def visit_Add(self, node: Node) -> str:
+        return "{:s} + {:s}".format(self.visit(node.left), self.visit(node.right))
+
+    def visit_Sub(self, node: Node):
+        return "{:s} - {:s}".format(self.visit(node.left), self.visit(node.right))
+
+    def visit_Mul(self, node: Node):
+        return "{:s} * {:s}".format(self.visit(node.left), self.visit(node.right))
+
+    def visit_Num(self, node: Node) -> str:
+        return str(node.val)
 
 
 def run_test():
@@ -48,4 +73,8 @@ def run_test():
 
 
 if __name__ == "__main__":
-    expr = Add(Number(3), Mul(Number(4), Number(5)))
+    expr = Add(Num(3), Mul(Num(4), Num(5)))
+    evaluator = Evaluator()
+    print(evaluator.visit(expr))
+    printer = Printer()
+    print(printer.visit(expr))
