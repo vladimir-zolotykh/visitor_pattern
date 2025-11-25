@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
+from typing import Union
 from functools import singledispatchmethod
 
 
@@ -37,7 +38,7 @@ MulNode = Mul
 NumNode = Num
 
 
-class Evaluator:
+class Walker:
     def __init__(self, mode="eval"):
         self.mode = mode
 
@@ -46,51 +47,41 @@ class Evaluator:
         raise NotImplementedError(f"No visit method for {type(node)}")
 
     @visit.register
-    def _(self, node: AddNode) -> float:
-        return self.visit(node.left) + self.visit(node.right)
+    def _(self, node: AddNode) -> float | str:
+        left = self.visit(node.left)
+        right = self.visit(node.right)
+        return (
+            left + right if self.mode == "eval" else "{:s} + {:s}".format(left, right)
+        )
 
     @visit.register
-    def _(self, node: SubNode) -> float:
-        return self.visit(node.left) - self.visit(node.right)
+    def _(self, node: SubNode) -> float | str:
+        left = self.visit(node.left)
+        right = self.visit(node.right)
+        return (
+            left - right if self.mode == "eval" else "{:s} - {:s}".format(left, right)
+        )
 
     @visit.register
-    def _(self, node: MulNode) -> float:
-        return self.visit(node.left) * self.visit(node.right)
+    def _(self, node: MulNode) -> float | str:
+        left = self.visit(node.left)
+        right = self.visit(node.right)
+        return (
+            left * right if self.mode == "eval" else "{:s} * {:s}".format(left, right)
+        )
 
     @visit.register
-    def _(self, node: NumNode) -> float:
-        return node.val
-
-
-class Printer:
-    @singledispatchmethod
-    def visit(self, node) -> str:
-        raise NotImplementedError(f"No visit method for {type(node)}")
-
-    @visit.register
-    def _(self, node: AddNode) -> str:
-        return "{:s} + {:s}".format(self.visit(node.left), self.visit(node.right))
-
-    @visit.register
-    def _(self, node: SubNode) -> str:
-        return "{:s} - {:s}".format(self.visit(node.left), self.visit(node.right))
-
-    @visit.register
-    def _(self, node: MulNode) -> str:
-        return "{:s} * {:s}".format(self.visit(node.left), self.visit(node.right))
-
-    @visit.register
-    def _(self, node: NumNode) -> str:
-        return str(node.val)
+    def _(self, node: NumNode) -> float | str:
+        return node.val if self.mode == "eval" else str(node.val)
 
 
 def run_test():
     """
     >>> expr = Add(Num(3), Mul(Num(4), Num(5)))
-    >>> evaluator = Evaluator()
+    >>> evaluator = Walker("eval")
     >>> evaluator.visit(expr)
     23
-    >>> printer = Printer()
+    >>> printer = Walker("print")
     >>> printer.visit(expr)
     '3 + 4 * 5'
     """
