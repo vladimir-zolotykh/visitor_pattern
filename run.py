@@ -14,38 +14,30 @@ class Num(Node):
 
 
 class BinOp(Node):
-    def __init__(self, left, right, op=None):
+    def __init__(self, left, right):
         self.left = left
         self.right = right
-        self.op = op
 
 
 class Add(BinOp):
-    pass
+    def __call__(self, left, right):
+        return left + right
 
 
 class Sub(BinOp):
-    pass
+    def __call__(self, left, right):
+        return left - right
 
 
 class Mul(BinOp):
-    pass
+    def __call__(self, left, right):
+        return left * right
 
 
 AddNode = Add
 SubNode = Sub
 MulNode = Mul
 NumNode = Num
-
-
-# class Visitor:
-#     def visit(self, node: Node) -> Any:
-#         name = f"visit_{type(node).__name__}"
-#         method = getattr(self, name, self.visit_generic)
-#         return method(node)
-
-#     def visit_generic(self, node: Node) -> NoReturn:
-#         raise TypeError(f"Don't know how to visit {node}")
 
 
 class Evaluator:
@@ -55,15 +47,15 @@ class Evaluator:
 
     @visit.register
     def _(self, node: AddNode) -> float:
-        return self.visit(node.left) + self.visit(node.right)
+        return node(self.visit(node.left), self.visit(node.right))
 
     @visit.register
     def _(self, node: SubNode) -> float:
-        return self.visit(node.left) - self.visit(node.right)
+        return node(self.visit(node.left), self.visit(node.right))
 
     @visit.register
     def _(self, node: MulNode) -> float:
-        return self.visit(node.left) * self.visit(node.right)
+        return node(self.visit(node.left), self.visit(node.right))
 
     @visit.register
     def _(self, node: NumNode) -> float:
