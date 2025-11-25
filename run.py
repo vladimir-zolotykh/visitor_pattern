@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
+from typing import Any, NoReturn
+
+
 class Node:
     pass
 
@@ -25,12 +28,12 @@ class Mul(BinOp):
 
 
 class Visitor:
-    def visit(self, node: Node):
+    def visit(self, node: Node) -> Any:
         name = f"visit_{type(node).__name__}"
         method = getattr(self, name, self.visit_generic)
         return method(node)
 
-    def visit_generic(self, node: Node):
+    def visit_generic(self, node: Node) -> NoReturn:
         raise TypeError(f"Don't know how to visit {node}")
 
 
