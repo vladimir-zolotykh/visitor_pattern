@@ -41,6 +41,9 @@ NumNode = Num
 
 
 class Evaluator:
+    def __init__(self, mode="eval"):
+        self.mode = mode
+
     @singledispatchmethod
     def visit(self, node):
         raise NotImplementedError(f"No visit method for {type(node)}")
