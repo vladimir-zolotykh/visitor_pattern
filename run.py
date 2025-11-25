@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
 from typing import Literal
-from functools import singledispatchmethod
+from functools import singledispatchmethod, wraps
 
 
 class Node:
@@ -48,10 +48,18 @@ class Walker:
     def visit(self, node):
         raise NotImplementedError(f"No visit method for {type(node)}")
 
+    def with_lr(func):
+        @wraps(func)
+        def wrapper(self, node, *args, **kwargs):
+            left = self.visit(node.left)
+            right = self.visit(node.right)
+            return func(self, node, *args, left=left, right=right, **kwargs)
+
+        return wrapper
+
     @visit.register
-    def _(self, node: AddNode):
-        left = self.visit(node.left)
-        right = self.visit(node.right)
+    @with_lr
+    def _(self, node: AddNode, *, left, right):
         return (
             left + right if self.mode == "eval" else "{:s} + {:s}".format(left, right)
         )
