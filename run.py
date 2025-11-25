@@ -64,8 +64,13 @@ class Printer(Visitor):
 
 def run_test():
     """
-    >>> True
-    True
+    >>> expr = Add(Num(3), Mul(Num(4), Num(5)))
+    >>> evaluator = Evaluator()
+    >>> evaluator.visit(expr)
+    23
+    >>> printer = Printer()
+    >>> printer.visit(expr)
+    '3 + 4 * 5'
     """
     import doctest
 
@@ -73,8 +78,4 @@ def run_test():
 
 
 if __name__ == "__main__":
-    expr = Add(Num(3), Mul(Num(4), Num(5)))
-    evaluator = Evaluator()
-    print(evaluator.visit(expr))
-    printer = Printer()
-    print(printer.visit(expr))
+    run_test()
