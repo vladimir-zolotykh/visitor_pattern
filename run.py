@@ -20,18 +20,15 @@ class BinOp(Node):
 
 
 class Add(BinOp):
-    def __call__(self, left, right):
-        return left + right
+    pass
 
 
 class Sub(BinOp):
-    def __call__(self, left, right):
-        return left - right
+    pass
 
 
 class Mul(BinOp):
-    def __call__(self, left, right):
-        return left * right
+    pass
 
 
 AddNode = Add
@@ -50,15 +47,15 @@ class Evaluator:
 
     @visit.register
     def _(self, node: AddNode) -> float:
-        return node(self.visit(node.left), self.visit(node.right))
+        return self.visit(node.left) + self.visit(node.right)
 
     @visit.register
     def _(self, node: SubNode) -> float:
-        return node(self.visit(node.left), self.visit(node.right))
+        return self.visit(node.left) - self.visit(node.right)
 
     @visit.register
     def _(self, node: MulNode) -> float:
-        return node(self.visit(node.left), self.visit(node.right))
+        return self.visit(node.left) * self.visit(node.right)
 
     @visit.register
     def _(self, node: NumNode) -> float:
