@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
-from typing import Any, NoReturn
+from functools import singledispatchmethod
 
 
 class Node:
@@ -14,9 +14,10 @@ class Num(Node):
 
 
 class BinOp(Node):
-    def __init__(self, left, right):
+    def __init__(self, left, right, op=None):
         self.left = left
         self.right = right
+        self.op = op
 
 
 class Add(BinOp):
@@ -37,41 +38,57 @@ MulNode = Mul
 NumNode = Num
 
 
-class Visitor:
-    def visit(self, node: Node) -> Any:
-        name = f"visit_{type(node).__name__}"
-        method = getattr(self, name, self.visit_generic)
-        return method(node)
+# class Visitor:
+#     def visit(self, node: Node) -> Any:
+#         name = f"visit_{type(node).__name__}"
+#         method = getattr(self, name, self.visit_generic)
+#         return method(node)
 
-    def visit_generic(self, node: Node) -> NoReturn:
-        raise TypeError(f"Don't know how to visit {node}")
+#     def visit_generic(self, node: Node) -> NoReturn:
+#         raise TypeError(f"Don't know how to visit {node}")
 
 
-class Evaluator(Visitor):
-    def visit_Add(self, node: AddNode) -> float:
+class Evaluator:
+    @singledispatchmethod
+    def visit(self, node):
+        raise NotImplementedError(f"No visit method for {type(node)}")
+
+    @visit.register
+    def _(self, node: AddNode) -> float:
         return self.visit(node.left) + self.visit(node.right)
 
-    def visit_Sub(self, node: SubNode) -> float:
+    @visit.register
+    def _(self, node: SubNode) -> float:
         return self.visit(node.left) - self.visit(node.right)
 
-    def visit_Mul(self, node: MulNode) -> float:
+    @visit.register
+    def _(self, node: MulNode) -> float:
         return self.visit(node.left) * self.visit(node.right)
 
-    def visit_Num(self, node: NumNode) -> float:
+    @visit.register
+    def _(self, node: NumNode) -> float:
         return node.val
 
 
-class Printer(Visitor):
-    def visit_Add(self, node: AddNode) -> str:
+class Printer:
+    @singledispatchmethod
+    def visit(self, node) -> str:
+        raise NotImplementedError(f"No visit method for {type(node)}")
+
+    @visit.register
+    def _(self, node: AddNode) -> str:
         return "{:s} + {:s}".format(self.visit(node.left), self.visit(node.right))
 
-    def visit_Sub(self, node: SubNode) -> str:
+    @visit.register
+    def _(self, node: SubNode) -> str:
         return "{:s} - {:s}".format(self.visit(node.left), self.visit(node.right))
 
-    def visit_Mul(self, node: MulNode) -> str:
+    @visit.register
+    def _(self, node: MulNode) -> str:
         return "{:s} * {:s}".format(self.visit(node.left), self.visit(node.right))
 
-    def visit_Num(self, node: NumNode) -> str:
+    @visit.register
+    def _(self, node: NumNode) -> str:
         return str(node.val)
 
 
