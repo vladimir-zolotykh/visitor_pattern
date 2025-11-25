@@ -52,10 +52,10 @@ class Printer(Visitor):
     def visit_Add(self, node: Node) -> str:
         return "{:s} + {:s}".format(self.visit(node.left), self.visit(node.right))
 
-    def visit_Sub(self, node: Node):
+    def visit_Sub(self, node: Node) -> str:
         return "{:s} - {:s}".format(self.visit(node.left), self.visit(node.right))
 
-    def visit_Mul(self, node: Node):
+    def visit_Mul(self, node: Node) -> str:
         return "{:s} * {:s}".format(self.visit(node.left), self.visit(node.right))
 
     def visit_Num(self, node: Node) -> str:
