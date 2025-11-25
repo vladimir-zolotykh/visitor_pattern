@@ -48,7 +48,7 @@ class Walker:
     def visit(self, node):
         raise NotImplementedError(f"No visit method for {type(node)}")
 
-    @staticmethod
+    @staticmethod  # need staticmethod to quiet mypy
     def with_lr(func):
         @wraps(func)
         def wrapper(self, node, *args, **kwargs):
