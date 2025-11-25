@@ -66,17 +66,15 @@ class Walker:
         )
 
     @visit.register
-    def _(self, node: SubNode):
-        left = self.visit(node.left)
-        right = self.visit(node.right)
+    @with_lr
+    def _(self, node: SubNode, *, left, right):
         return (
             left - right if self.mode == "eval" else "{:s} - {:s}".format(left, right)
         )
 
     @visit.register
-    def _(self, node: MulNode):
-        left = self.visit(node.left)
-        right = self.visit(node.right)
+    @with_lr
+    def _(self, node: MulNode, *, left, right):
         return (
             left * right if self.mode == "eval" else "{:s} * {:s}".format(left, right)
         )
