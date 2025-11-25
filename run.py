@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
-from typing import Union
+from typing import Literal
 from functools import singledispatchmethod
 
 
@@ -39,7 +39,9 @@ NumNode = Num
 
 
 class Walker:
-    def __init__(self, mode="eval"):
+    def __init__(self, mode: Literal["eval", "print"] = "eval"):
+        if mode not in ("eval", "print"):
+            raise TypeError("Mode must be eval or print")
         self.mode = mode
 
     @singledispatchmethod
@@ -47,7 +49,7 @@ class Walker:
         raise NotImplementedError(f"No visit method for {type(node)}")
 
     @visit.register
-    def _(self, node: AddNode) -> float | str:
+    def _(self, node: AddNode):
         left = self.visit(node.left)
         right = self.visit(node.right)
         return (
@@ -55,7 +57,7 @@ class Walker:
         )
 
     @visit.register
-    def _(self, node: SubNode) -> float | str:
+    def _(self, node: SubNode):
         left = self.visit(node.left)
         right = self.visit(node.right)
         return (
@@ -63,7 +65,7 @@ class Walker:
         )
 
     @visit.register
-    def _(self, node: MulNode) -> float | str:
+    def _(self, node: MulNode):
         left = self.visit(node.left)
         right = self.visit(node.right)
         return (
@@ -71,7 +73,7 @@ class Walker:
         )
 
     @visit.register
-    def _(self, node: NumNode) -> float | str:
+    def _(self, node: NumNode):
         return node.val if self.mode == "eval" else str(node.val)
 
 
