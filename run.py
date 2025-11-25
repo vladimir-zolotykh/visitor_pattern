@@ -23,8 +23,18 @@ class Add(BinOp):
     pass
 
 
+class Sub(BinOp):
+    pass
+
+
 class Mul(BinOp):
     pass
+
+
+AddNode = Add
+SubNode = Sub
+MulNode = Mul
+NumNode = Num
 
 
 class Visitor:
@@ -38,30 +48,30 @@ class Visitor:
 
 
 class Evaluator(Visitor):
-    def visit_Add(self, node: Node) -> float:
+    def visit_Add(self, node: AddNode) -> float:
         return self.visit(node.left) + self.visit(node.right)
 
-    def visit_Sub(self, node: Node) -> float:
+    def visit_Sub(self, node: SubNode) -> float:
         return self.visit(node.left) - self.visit(node.right)
 
-    def visit_Mul(self, node: Node) -> float:
+    def visit_Mul(self, node: MulNode) -> float:
         return self.visit(node.left) * self.visit(node.right)
 
-    def visit_Num(self, node: Node) -> float:
+    def visit_Num(self, node: NumNode) -> float:
         return node.val
 
 
 class Printer(Visitor):
-    def visit_Add(self, node: Node) -> str:
+    def visit_Add(self, node: AddNode) -> str:
         return "{:s} + {:s}".format(self.visit(node.left), self.visit(node.right))
 
-    def visit_Sub(self, node: Node) -> str:
+    def visit_Sub(self, node: SubNode) -> str:
         return "{:s} - {:s}".format(self.visit(node.left), self.visit(node.right))
 
-    def visit_Mul(self, node: Node) -> str:
+    def visit_Mul(self, node: MulNode) -> str:
         return "{:s} * {:s}".format(self.visit(node.left), self.visit(node.right))
 
-    def visit_Num(self, node: Node) -> str:
+    def visit_Num(self, node: NumNode) -> str:
         return str(node.val)
 
 
